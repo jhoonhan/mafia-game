@@ -1,0 +1,21 @@
+.hidden {
+  display: none;
+  opacity: 0;
+}
+.voteNames {
+  display: block;
+}
+.voteNames h2 {
+  width: auto;
+  padding: 10px 20px;
+  border: 1px solid black;
+  display: inline-block;
+  margin: 5px 10px;
+}
+.voter {
+  display: inline-block;
+  padding: 10px 20px;
+  border: 1px solid #666;
+  margin: 0px 5px;
+}
+/*# sourceMappingURL=styles.css.map */

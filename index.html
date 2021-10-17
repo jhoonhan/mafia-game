@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Mafia Game</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" async></script>
+    <script src="votingFunctions3.js" async></script>
+  </head>
+  <body>
+    <nav class="navigation">
+      <a class="restart" href="#">Restart</a>
+      <p class="gameStatus">Settings</p>
+    </nav>
+    <header class="init">
+      <form class="initForm setNumberOfPlayers">
+        <p>How many players?</p>
+        <input type="number" class="initForm_numberOfPlayers" />
+        <button class="submitPlayers_btn">Submit</button>
+      </form>
+      <form class="initForm playerNames"></form>
+      <form class="initForm settings hidden">
+        <p>How many Mafias?</p>
+        <input type="number" class="initForm_numberOfMafias" />
+        <p>How many cops?</p>
+        <input type="number" class="initForm_numberOfCops" />
+        <p>How many docs?</p>
+        <input type="number" class="initForm_numberOfDocs" />
+        <button class="startGame_btn">Start Game</button>
+      </form>
+    </header>
+    <section class="announcement hidden">
+      <h2>Click Reveal</h2>
+      <p>to find out your role and mission.</p>
+      <button class="reveal">REVEAL</button>
+      <button class="hideResult hidden">Click to next</button>
+      <button class="toMorning hidden">to Morning</button>
+    </section>
+    <section class="between hidden">
+      <h2>blahblah</h2>
+      <p>blahblahblah</p>
+      <button class="nextBetween">NEXT</button>
+    </section>
+    <main class="app hidden">
+      <form id="" class="wrapper morning">
+        <p>now discuss who you fuckers wanna kill through VOTE</p>
+        <button class="next">NEXT</button>
+      </form>
+      <form id="" class="wrapper vote hidden">
+        <p class="errorMessage"></p>
+        <p class="voteText">Minseo, who do you want to kill?</p>
+        <div class="voteNameContainer">
+          <button class="reVote hidden">revote</button>
+          <button class="submitVote hidden">Submit</button>
+          <button class="specialtyVote hidden">SPECIALTY</button>
+        </div>
+        <div class="confirmVotePage hidden">
+          <p class="specialtyMessage"></p>
+          <button class="confirmVote">confirm</button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>
