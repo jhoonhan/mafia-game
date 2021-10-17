@@ -120,6 +120,7 @@ const votingStarts = function () {
       .querySelector(`.votePlayer${i}`)
       .addEventListener('click', function (e) {
         e.preventDefault();
+        hideQ(confirmVotePage, false);
         if (clickable === true) {
           votingFn(i);
         } else {
@@ -185,7 +186,7 @@ const votingFn = function (i) {
     votingMachine(i);
     generateMessage(
       currentVoterMessage,
-      `${players[randomOrder[playerTurn]].name}, conform your vote. - LN188`
+      `${players[randomOrder[playerTurn]].name}, confirm your vote. - LN188`
     );
     // currentVoterMessage.textContent = `CONFIRM`;
   } else if (playerTurn === players.length - 1) {
@@ -268,6 +269,8 @@ btnConfirmVote.addEventListener('click', function (e) {
     hideQ(btnReVote, false);
     hideQ(btnSubmitVote, false);
     currentVoterMessage.textContent = `Voting ended, click submit to confirm or revote. - LN270`;
+    clickable = false;
+    hideQ(btnConfirmVote);
   }
 
   // increase current player number
