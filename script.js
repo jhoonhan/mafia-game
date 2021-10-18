@@ -14,7 +14,6 @@ let numberOfPlayers,
   currentStage,
   currentPlayer;
 
-
 const nameOfRoles = ['mafia', 'cop', 'doc', 'civilian'];
 const stages = ['init', 'morning', 'voting', 'between', 'announcement'];
 
@@ -105,7 +104,7 @@ const shuffleArrR = function (arr) {
 currentStage = 'init';
 //////////// Restart ////////////
 document.querySelector('.restart').addEventListener('click', function (e) {
-  e.preventDefault();
+  // e.preventDefault();
   // Clean out players
   players = [];
   names = [];
@@ -223,7 +222,6 @@ btnGameStart.addEventListener('click', function (e) {
     numberOfCops <= numberOfMafias
   ) {
     // Shuffle players array to prepare for random role selection
-    
 
     // Select roles based on the order of the shuffled array
     const roleSelector = function (arr) {

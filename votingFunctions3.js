@@ -31,6 +31,37 @@ const btnConfirmVote = document.querySelector('.confirmVote');
 const btnBetween = document.querySelector('.nextBetween');
 
 // Player order
+const votingSorterMSG = function () {
+  if (currentStage === 'specialty') {
+    if (
+      players[randomOrder[playerTurn]].role === 'mafia' &&
+      selectedByMafia.length > 0
+    ) {
+      currentVoterMessage.textContent = `${
+        players[randomOrder[playerTurn]].name
+      }, you are a mafia. Other mafias selected ${selectedByMafia.join(', ')}.`;
+    } else if (
+      players[randomOrder[playerTurn]].role === 'mafia' &&
+      selectedByMafia.length === 0
+    ) {
+      currentVoterMessage.textContent = `${
+        players[randomOrder[playerTurn]].name
+      }, you are a mafia. You are the first mafia to vote. Other mafias will be able to see your choice.`;
+    } else if (players[randomOrder[playerTurn]].role === 'cop') {
+      currentVoterMessage.textContent = `${
+        players[randomOrder[playerTurn]].name
+      }, you are a cop. You can select one to see whether the player is a mafia or not. You can only select once so do it wisely`;
+    } else if (players[randomOrder[playerTurn]].role === 'doc') {
+      currentVoterMessage.textContent = `${
+        players[randomOrder[playerTurn]].name
+      }, you are a doctor. You can select one to save the player from getting killed by the mafia tonight.`;
+    } else if (players[randomOrder[playerTurn]].role === 'civilian') {
+      currentVoterMessage.textContent = `${
+        players[randomOrder[playerTurn]].name
+      }, you are a civilian. At this moment, all you can do is to pray to God that mafias don't kill you. Select anyone below.`;
+    }
+  }
+};
 // Between
 const betweenVote = function (type) {
   hideQ(secApp);
@@ -40,10 +71,13 @@ const betweenVote = function (type) {
     betweenH2.textContent = `${
       players[randomOrder[playerTurn]].name
     }'s turn - LN44`;
-    betweenP.textContent = `Get ready to vote - LN44`;
+    betweenP.textContent = `Give phone to ${
+      players[randomOrder[playerTurn]].name
+    } - LN44`;
     currentVoterMessage.textContent = `${
       players[randomOrder[playerTurn]].name
-    } vote! - LN44`;
+    }, vote the most suspicious player.`;
+    votingSorterMSG();
   } else if (type === 2) {
     betweenH2.textContent = `Voting has ended - LN44`;
     betweenP.textContent = `Let's see who got fucked - LN44`;
@@ -120,7 +154,9 @@ const votingStarts = function () {
       .querySelector(`.votePlayer${i}`)
       .addEventListener('click', function (e) {
         e.preventDefault();
-        hideQ(confirmVotePage, false);
+        if (playerTurn < players.length - 1) {
+          hideQ(confirmVotePage, false);
+        }
         if (clickable === true) {
           votingFn(i);
         } else {
@@ -152,14 +188,6 @@ const votingStarts = function () {
           if (players[randomOrder[playerTurn]].role === 'mafia') {
             selected = true;
             selectedToBeKilled = i;
-            if (selectedByMafia.length > 0) {
-              currentVoterMessage.textContent = `Other mafias voted for : ${selectedByMafia.join(
-                ', '
-              )}. - LN 157`;
-            } else {
-              currentVoterMessage.textContent = `You are the first mafia. Other mafias will be able to see your choice. - LN 159`;
-            }
-
             specialtyMessage.textContent = `You voted ${players[i].name} to be killed - LN 162`;
             return selectedToBeKilled;
           } //
@@ -170,7 +198,14 @@ const votingStarts = function () {
             return selectedToBeKilled;
             return selectedByDoc;
           } //
-          else {
+          else if (players[randomOrder[playerTurn]].role === 'cop') {
+            if (players[i].role === 'mafia') {
+              specialtyMessage.textContent = `Player ${players[i].name} is a mafia`;
+            } else {
+              specialtyMessage.textContent = `Player ${players[i].name} is not a mafia`;
+            }
+          } else {
+            specialtyMessage.textContent = `You did nothing - LN 216`;
             selected = true;
             return null;
           }
@@ -183,40 +218,21 @@ const votingStarts = function () {
 const votingFn = function (i) {
   // Insert voters name next to voted
   if (playerTurn < players.length - 1) {
-    votingMachine(i);
+    hideQ(voteNameContainer, false);
+    hideQ(confirmVotePage, false);
     generateMessage(
       currentVoterMessage,
       `${players[randomOrder[playerTurn]].name}, confirm your vote. - LN188`
     );
     // currentVoterMessage.textContent = `CONFIRM`;
   } else if (playerTurn === players.length - 1) {
-    votingMachine(i);
-  } else {
+    hideQ(voteNameContainer, false);
+    hideQ(confirmVotePage, false);
+  } else if (playerTurn > players.length - 1) {
     //Move to result
     console.log('nah');
   }
-
   return votingProgress;
-};
-
-const votingMachine = function (i) {
-  // Voting Machine
-  hideQ(voteNameContainer, false);
-  hideQ(confirmVotePage, false);
-
-  // Cop finding when clicked CLB voting
-  if (currentStage === 'specialty') {
-    if (players[randomOrder[playerTurn]].role === 'mafia') {
-    } else if (players[randomOrder[playerTurn]].role === 'cop') {
-      if (players[i].role === 'mafia') {
-        specialtyMessage.textContent = `Player ${players[i].name} is a mafia`;
-      } else {
-        specialtyMessage.textContent = `Player ${players[i].name} is not a mafia`;
-      }
-    } else {
-      specialtyMessage.textContent = `You did nothing - LN 216`;
-    }
-  }
 };
 
 btnConfirmVote.addEventListener('click', function (e) {
@@ -242,35 +258,12 @@ btnConfirmVote.addEventListener('click', function (e) {
       //
     }
   }
-
-  // Decides next voter's message
-  // NOTE: First voter's message is decided before with currentVoterMessageFn()
-  if (currentStage === 'specialty' && playerTurn < players.length - 1) {
-    if (players[randomOrder[playerTurn + 1]].role === 'mafia') {
-      currentVoterMessage.textContent = `Other mafias voted for : ${selectedByMafia.join(
-        ', '
-      )}. - LN251`;
-      //
-    } else if (players[randomOrder[playerTurn + 1]].role === 'doc') {
-      currentVoterMessage.textContent = `You doc mothafacak - LN254`;
-      //
-    } else if (players[randomOrder[playerTurn + 1]].role === 'cop') {
-      currentVoterMessage.textContent = `You cop mothafacka - LN257`;
-      //
-    } else if (players[randomOrder[playerTurn + 1]].role === 'civilian') {
-      currentVoterMessage.textContent = `You civ mothafacka - LN260`;
-      //
-    } else {
-      console.log(`error123`);
-    }
-  }
   // Decides wheather voting is ended
   if (playerTurn >= players.length - 1) {
     hideQ(btnReVote, false);
     hideQ(btnSubmitVote, false);
     currentVoterMessage.textContent = `Voting ended, click submit to confirm or revote. - LN270`;
     clickable = false;
-    hideQ(btnConfirmVote);
   }
 
   // increase current player number
@@ -376,8 +369,7 @@ const findMostVoted = function () {
   // see if there is equal amount of votes
   if (votedCount.length >= 2) {
     errorMessage.textContent = `Can only vote for one - LN375`;
-    console.log(`wtf`);
-    setTimeout(revoteFn(), 5000);
+    revoteFn(), 5000;
   } else if (votedPlayer === null) {
     errorMessage.textContent = `No one died - LN379`;
     console.log(players);
@@ -400,7 +392,6 @@ const findMostVoted = function () {
     finishedVoting(false);
     players.splice(votedPlayer, 1);
   } else if (
-    currentStage === 'voting' &&
     typeof votedPlayer === 'number' &&
     players[votedPlayer].role === 'mafia'
   ) {
