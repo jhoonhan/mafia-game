@@ -66,7 +66,7 @@ const votingSorterMSG = function () {
 const betweenVote = function (type) {
   hideQ(secApp);
   hideQ(secBetween, false);
-  // For the playerTurn 0. First player.
+  // messages for each players
   if (type === 1) {
     betweenH2.textContent = `${
       players[randomOrder[playerTurn]].name
@@ -246,14 +246,13 @@ btnConfirmVote.addEventListener('click', function (e) {
     if (players[randomOrder[playerTurn]].role === 'mafia') {
       // Create array of selected names by mafia
       selectedByMafia.push(`${players[selectedToBeKilled].name}`);
-      selectedByMafiaLast.push(`${players[selectedToBeKilled].name}`);
-      votingProgress[selectedToBeKilled] =
-        votingProgress[selectedToBeKilled] + 1;
+      // selectedByMafiaLast.push(`${players[selectedToBeKilled].name}`);
+      votingProgress[selectedToBeKilled] += 1;
       console.log(players[selectedToBeKilled].name);
       // doctor hijacks mafia's votes
     } else if (players[randomOrder[playerTurn]].role === 'doc') {
       votingProgress[selectedByDoc] =
-        Number(votingProgress[selectedByDoc]) - Number(players.length + 1);
+        Number(votingProgress[selectedByDoc]) * -1;
     } else {
       //
     }
@@ -348,14 +347,17 @@ btnSubmitVote.addEventListener('click', function (e) {
 const findMostVoted = function () {
   const mostVoted = Math.max(...votingProgress);
   let votedCount;
+  let savedByDoc;
   // Check to see if there is same number of votes
   if (mostVoted > 0) {
     // this is set to 0 because doctor hijacks mafia vote by converting it into negative interger
     votedCount = votingProgress.filter(num => num === mostVoted);
+    savedByDoc = votingProgress.filter(num => num < 0);
     votedPlayer = votingProgress.indexOf(mostVoted);
   } else {
     votedCount = 0;
     votedPlayer = null;
+    savedByDoc = [];
   }
   //
   const finishedVoting = function (remove) {
@@ -369,6 +371,9 @@ const findMostVoted = function () {
   // see if there is equal amount of votes
   if (votedCount.length >= 2) {
     errorMessage.textContent = `Can only vote for one - LN375`;
+    revoteFn(), 5000;
+  } else if (savedByDoc.length !== 0) {
+    errorMessage.textContent = `Mafias, make up your mind - LN377`;
     revoteFn(), 5000;
   } else if (votedPlayer === null) {
     errorMessage.textContent = `No one died - LN379`;
@@ -407,7 +412,6 @@ const findMostVoted = function () {
 // Specialty Vote
 btnSpecialtyVote.addEventListener('click', function (e) {
   e.preventDefault();
-  displayStatistics();
   revoteFn();
   hideQ(btnReVote);
   hideQ(btnSubmitVote);
@@ -421,5 +425,6 @@ btnSpecialtyVote.addEventListener('click', function (e) {
   } else {
     console.log(`ERROR6`);
   }
+  displayStatistics();
   console.log(players);
 });

@@ -84,8 +84,12 @@ const multipleClassList = function (type, cn, cn2) {
 const displayStatistics = function () {
   if (numberOfMafias >= players.length - numberOfMafias) {
     gameStatusMessage.textContent = `MAFIA WIIIIINNNN`;
+    hideQ(secApp);
+    hideQ(secBetween);
   } else if (numberOfMafias < 1) {
     gameStatusMessage.textContent = `CIV WIIIIINNNN`;
+    hideQ(secApp);
+    hideQ(secBetween);
   } else {
     gameStatusMessage.textContent = `Mafias: ${numberOfMafias} / Civilians: ${
       players.length - numberOfMafias
