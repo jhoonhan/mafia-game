@@ -9,6 +9,7 @@ let votingProgress = [];
 
 let randomOrder = [];
 let playerTurn;
+let reVoteTurn = 0;
 
 const secApp = document.querySelector('.app');
 const secMorning = document.querySelector('.morning');
@@ -33,20 +34,31 @@ const btnBetween = document.querySelector('.nextBetween');
 // Player order
 const votingSorterMSG = function () {
   if (currentStage === 'specialty') {
-    if (
-      players[randomOrder[playerTurn]].role === 'mafia' &&
-      selectedByMafia.length > 0
-    ) {
-      currentVoterMessage.textContent = `${
-        players[randomOrder[playerTurn]].name
-      }, you are a mafia. Other mafias selected ${selectedByMafia.join(', ')}.`;
-    } else if (
-      players[randomOrder[playerTurn]].role === 'mafia' &&
-      selectedByMafia.length === 0
-    ) {
-      currentVoterMessage.textContent = `${
-        players[randomOrder[playerTurn]].name
-      }, you are a mafia. You are the first mafia to vote. Other mafias will be able to see your choice.`;
+    if (players[randomOrder[playerTurn]].role === 'mafia') {
+      if (selectedByMafia.length > 0 && selectedByMafiaLast.length === 0) {
+        currentVoterMessage.textContent = `${
+          players[randomOrder[playerTurn]].name
+        }, you are a mafia. Other mafias selected ${selectedByMafia.join(
+          ', '
+        )}.`;
+      } else if (
+        selectedByMafia.length === 0 &&
+        selectedByMafiaLast.length === 0
+      ) {
+        currentVoterMessage.textContent = `${
+          players[randomOrder[playerTurn]].name
+        }, you are a mafia. You are the first mafia to vote. Other mafias will be able to see your choice.`;
+      } else if (selectedByMafia.length > 0 && selectedByMafiaLast.length > 0) {
+        currentVoterMessage.textContent = `${
+          players[randomOrder[playerTurn]].name
+        }, you are a mafia. Other mafias selected ${selectedByMafia.join(
+          ', '
+        )}.`;
+      } else if (
+        selectedByMafia.length === 0 &&
+        selectedByMafiaLast.length > 0
+      ) {
+      }
     } else if (players[randomOrder[playerTurn]].role === 'cop') {
       currentVoterMessage.textContent = `${
         players[randomOrder[playerTurn]].name
@@ -235,6 +247,10 @@ const votingFn = function (i) {
   return votingProgress;
 };
 
+const lastMafiaPick = function () {
+  selectedByMafiaLast.push(`${players[selectedToBeKilled].name}`);
+};
+
 btnConfirmVote.addEventListener('click', function (e) {
   e.preventDefault();
   // increase voting progress
@@ -246,7 +262,7 @@ btnConfirmVote.addEventListener('click', function (e) {
     if (players[randomOrder[playerTurn]].role === 'mafia') {
       // Create array of selected names by mafia
       selectedByMafia.push(`${players[selectedToBeKilled].name}`);
-      // selectedByMafiaLast.push(`${players[selectedToBeKilled].name}`);
+
       votingProgress[selectedToBeKilled] += 1;
       console.log(players[selectedToBeKilled].name);
       // doctor hijacks mafia's votes
@@ -291,8 +307,8 @@ btnReVote.addEventListener('click', function (e) {
 const revoteFn = function () {
   // cleans votingProgress
   votingProcess();
-  // removed voted
-  selectedByMafia = [];
+  // increase vote turn #2
+  reVoteTurn += 1;
   // remove added voters names
   const voter = document.querySelectorAll('.voter');
   if (voter !== null) {
@@ -328,6 +344,7 @@ const specialtyVoting = function () {
   multipleClassRemove('voteNames');
   votingProcess();
   votingStarts();
+  reVoteTurn = 0;
 };
 
 // Submit result
@@ -369,9 +386,14 @@ const findMostVoted = function () {
     }
   };
   // see if there is equal amount of votes
-  if (votedCount.length >= 2) {
+  if (currentStage === 'voting' && votedCount.length >= 2) {
     errorMessage.textContent = `Can only vote for one - LN375`;
     revoteFn(), 5000;
+  } else if (currentStage === 'specialty' && votedCount.length >= 2) {
+    errorMessage.textContent = `Can only vote for one - LN375`;
+    revoteFn(), 5000;
+    selectedByMafiaLast.push(selectedByMafia);
+    console.log(selectedByMafiaLast);
   } else if (savedByDoc.length !== 0) {
     errorMessage.textContent = `Mafias, make up your mind - LN377`;
     revoteFn(), 5000;
