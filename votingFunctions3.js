@@ -254,10 +254,6 @@ const votingFn = function (i) {
   return votingProgress;
 };
 
-const lastMafiaPick = function () {
-  selectedByMafiaLast.push(`${players[selectedToBeKilled].name}`);
-};
-
 btnConfirmVote.addEventListener('click', function (e) {
   e.preventDefault();
   // increase voting progress
@@ -268,7 +264,9 @@ btnConfirmVote.addEventListener('click', function (e) {
     // Mafia kill
     if (players[randomOrder[playerTurn]].role === 'mafia') {
       // Create array of selected names by mafia
-      selectedByMafia.push(`${players[selectedToBeKilled].name}`);
+      selectedByMafia.push(
+        `${players[selectedToBeKilled].name}(${players[playerTurn].name})`
+      );
 
       votingProgress[selectedToBeKilled] += 1;
       console.log(players[selectedToBeKilled].name);
