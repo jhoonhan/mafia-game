@@ -48,16 +48,23 @@ const votingSorterMSG = function () {
         currentVoterMessage.textContent = `${
           players[randomOrder[playerTurn]].name
         }, you are a mafia. You are the first mafia to vote. Other mafias will be able to see your choice.`;
-      } else if (selectedByMafia.length > 0 && selectedByMafiaLast.length > 0) {
+      }
+      /// reVoteTurn > 0;
+      else if (selectedByMafia.length > 0 && selectedByMafiaLast.length > 0) {
         currentVoterMessage.textContent = `${
           players[randomOrder[playerTurn]].name
         }, you are a mafia. Other mafias selected ${selectedByMafia.join(
           ', '
-        )}.`;
+        )}. Last turn, others selected ${selectedByMafiaLast[reVoteTurn - 1]}.`;
       } else if (
         selectedByMafia.length === 0 &&
         selectedByMafiaLast.length > 0
       ) {
+        currentVoterMessage.textContent = `${
+          players[randomOrder[playerTurn]].name
+        }, you are a mafia. You are the first mafia to vote. Other mafias will be able to see your choice. Last turn, others selected ${
+          selectedByMafiaLast[reVoteTurn - 1]
+        }.`;
       }
     } else if (players[randomOrder[playerTurn]].role === 'cop') {
       currentVoterMessage.textContent = `${
@@ -305,8 +312,12 @@ btnReVote.addEventListener('click', function (e) {
   revoteFn();
 });
 const revoteFn = function () {
-  // cleans votingProgress
-  votingProcess();
+  if (currentStage === 'specialty') {
+    selectedByMafiaLast.push(selectedByMafia);
+    console.log(selectedByMafiaLast);
+  }
+  // clean selected by mafia
+  selectedByMafia = [];
   // increase vote turn #2
   reVoteTurn += 1;
   // remove added voters names
@@ -318,6 +329,8 @@ const revoteFn = function () {
   }
   hideQ(btnReVote);
   hideQ(btnSubmitVote);
+  // cleans votingProgress
+  votingProcess();
 };
 //
 //
@@ -330,6 +343,9 @@ const voting = function () {
   hideQ(secMorning);
   multipleClassRemove('voteNames');
   hideQ(secVote, false);
+  // clenas out turns
+  reVoteTurn = 0;
+  playerTurn = 0;
   // initialize voting
   votingProcess();
   // creates clickables & starts voting
@@ -392,8 +408,6 @@ const findMostVoted = function () {
   } else if (currentStage === 'specialty' && votedCount.length >= 2) {
     errorMessage.textContent = `Can only vote for one - LN375`;
     revoteFn(), 5000;
-    selectedByMafiaLast.push(selectedByMafia);
-    console.log(selectedByMafiaLast);
   } else if (savedByDoc.length !== 0) {
     errorMessage.textContent = `Mafias, make up your mind - LN377`;
     revoteFn(), 5000;
